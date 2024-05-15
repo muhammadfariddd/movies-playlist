@@ -67,13 +67,13 @@ searchButton.addEventListener("click", async function () {
     const movies = await getMovies(inputKeyword.value);
     updateUI(movies);
   } catch (err) {
-    // console.log(err);
-    alert(err);
+    console.log.error(err);
+    alert(err.message);
   }
 });
 
 function getMovies(keyword) {
-  return fetch("http://www.omdbapi.com/?apikey=8d74cc36&s=" + keyword)
+  return fetch("https://www.omdbapi.com/?apikey=8d74cc36&s=" + keyword)
     .then((response) => {
       if (!response.ok) {
         throw new Error(response.statusText);
@@ -99,13 +99,18 @@ function updateUI(movies) {
 document.addEventListener("click", async function (e) {
   if (e.target.classList.contains("modal-detail-button")) {
     const imdbid = e.target.dataset.imdbid;
-    const movieDetail = await getMovieDetail(imdbid);
-    updateUIDetail(movieDetail);
+    try {
+      const movieDetail = await getMovieDetail(imdbid);
+      updateUIDetail(movieDetail);
+    } catch (err) {
+      console.log.error(err);
+      alert(err.message);
+    }
   }
 });
 
 function getMovieDetail(imdbid) {
-  return fetch("http://www.omdbapi.com/?apikey=8d74cc36&i=" + imdbid)
+  return fetch("https://www.omdbapi.com/?apikey=8d74cc36&i=" + imdbid)
     .then((response) => response.json())
     .then((m) => m);
 }
