@@ -64,7 +64,9 @@ const searchButton = document.querySelector(".search-button");
 searchButton.addEventListener("click", async function () {
   try {
     const inputKeyword = document.querySelector(".input-keyword");
+    console.log("Keyword:", inputKeyword.value);
     const movies = await getMovies(inputKeyword.value);
+    console.log("Movies:", movies);
     updateUI(movies);
   } catch (err) {
     console.log.error(err);
@@ -75,12 +77,14 @@ searchButton.addEventListener("click", async function () {
 function getMovies(keyword) {
   return fetch("https://www.omdbapi.com/?apikey=8d74cc36&s=" + keyword)
     .then((response) => {
+      console.log("Fetch response:", response);
       if (!response.ok) {
         throw new Error(response.statusText);
       }
       return response.json();
     })
     .then((response) => {
+      console.log("Fetch JSON:", response);
       if (response.Response === "False") {
         throw new Error(response.Error);
       }
@@ -90,8 +94,12 @@ function getMovies(keyword) {
 
 function updateUI(movies) {
   let cards = "";
-  movies.forEach((m) => (cards += showCards(m)));
+  movies.forEach((m) => {
+    console.log("Movie:", m);
+    cards += showCards(m);
+  });
   const movieContainer = document.querySelector(".movie-container");
+  console.log("Cards HTML:", cards);
   movieContainer.innerHTML = cards;
 }
 
@@ -101,6 +109,7 @@ document.addEventListener("click", async function (e) {
     const imdbid = e.target.dataset.imdbid;
     try {
       const movieDetail = await getMovieDetail(imdbid);
+      console.log("Movie Detail:", movieDetail);
       updateUIDetail(movieDetail);
     } catch (err) {
       console.log.error(err);
@@ -111,13 +120,23 @@ document.addEventListener("click", async function (e) {
 
 function getMovieDetail(imdbid) {
   return fetch("https://www.omdbapi.com/?apikey=8d74cc36&i=" + imdbid)
-    .then((response) => response.json())
-    .then((m) => m);
+    .then((response) => {
+      console.log("Fetch detail response:", response); // Tambahkan log respons detail untuk debug
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      return response.json();
+    })
+    .then((m) => {
+      console.log("Fetch detail JSON:", m); // Tambahkan log JSON detail untuk debug
+      return m;
+    });
 }
 
 function updateUIDetail(m) {
   const movieDetail = showMovieDetail(m);
   const modalBody = document.querySelector(".modal-body");
+  console.log("Modal detail HTML:", movieDetail);
   modalBody.innerHTML = movieDetail;
 }
 
